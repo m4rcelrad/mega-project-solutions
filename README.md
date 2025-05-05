@@ -5,4 +5,4 @@ This repository contains my personal solutions to programming problems listed in
 ## 💻 Technologies Used
 
 Python 
-
+C
