@@ -3,231 +3,194 @@ import math
 
 class Pi:
     """
-    Calculates π (pi) to a specified number of decimal places using the Gauss-Legendre algorithm.
-    This iterative algorithm quadratically converges to π, providing rapid digit calculation.
+    A class to calculate the value of π to a specified number of decimal places using the Gauss-Legendre algorithm.
+    The algorithm provides quadratic convergence, doubling the number of correct digits with each iteration.
+
+    Attributes:
+        n (int): Number of decimal places to calculate (limited to 100)
+        accuracy (float): The desired accuracy threshold for convergence
+        a, b, t, p (float): Variables used in the Gauss-Legendre algorithm
     """
-    
+
     def __init__(self, n):
-        """
-        Initializes the π calculator with precision parameters.
-        
-        Args:
-            n (int): Number of decimal places desired (max 100)
-            
-        Raises:
-            ValueError: If requested precision exceeds 100 digits
-        """
         if n > 100:
             raise ValueError("The number of decimal places is limited to 100.")
         self.n = n
-        self.accuracy = 10 ** (-n)  # Stopping condition threshold
-        self.a = 1.0  # Initial a value
-        self.b = 1.0 / math.sqrt(2)  # Initial b value
-        self.t = 0.25  # Initial t value
-        self.p = 1.0  # Power of 2 multiplier
+        self.accuracy = 10 ** (-n)  # Set precision threshold
+        self.a = 1.0  # Initial value of a
+        self.b = 1.0 / (2 ** 0.5)  # Initial value of b
+        self.t = 0.25  # Initial value of t
+        self.p = 1.0  # Initial value of power
 
     def calculate(self):
         """
-        Executes the Gauss-Legendre iteration until desired accuracy is achieved.
-        
+        Iteratively applies the Gauss-Legendre algorithm until convergence is achieved.
+
         Returns:
-            float: π approximated to n decimal places
+            float: The calculated value of π rounded to n decimal places
         """
         while abs(self.a - self.b) > self.accuracy:
-            a_next = (self.a + self.b) / 2
-            self.b = math.sqrt(self.a * self.b)
-            self.t -= self.p * ((self.a - a_next) ** 2)
-            self.a = a_next
-            self.p *= 2
+            a_next = (self.a + self.b) / 2  # Arithmetic mean
+            self.b = (self.a * self.b) ** 0.5  # Geometric mean
+            self.t -= self.p * ((self.a - a_next) ** 2)  # Update t
+            self.a = a_next  # Update a
+            self.p *= 2  # Double the power
 
         pi = ((self.a + self.b) ** 2) / (4 * self.t)
         return round(pi, self.n)
 
+
 class E:
     """
-    Calculates Euler's number (e) using Taylor series expansion.
-    The series converges to e as the number of terms approaches infinity.
+    A class to calculate the value of e (Euler's number) to a specified number of decimal places
+    using the Taylor series expansion of e^x where x=1.
+
+    Attributes:
+        n (int): Number of decimal places to calculate (limited to 100)
+        accuracy (float): The desired accuracy threshold for convergence
+        e (float): Current approximation of e
+        factorial (float): Running factorial value
+        k (int): Current term index in the series
     """
-    
+
     def __init__(self, n):
-        """
-        Initializes the e calculator with precision parameters.
-        
-        Args:
-            n (int): Number of decimal places desired (max 100)
-            
-        Raises:
-            ValueError: If requested precision exceeds 100 digits
-        """
         if n > 100:
             raise ValueError("The number of decimal places is limited to 100.")
         self.n = n
-        self.accuracy = 10 ** (-n)  # Terminate when terms are smaller than this
-        self.e = 0.0  # Current approximation
-        self.factorial = 1.0  # Running factorial value
-        self.k = 0  # Current term index
+        self.accuracy = 10 ** (-n)
+        self.e = 0.0  # Initialize e
+        self.factorial = 1.0  # 0! = 1
+        self.k = 0  # Term counter
 
     def taylor_series(self):
         """
-        Recursively calculates e by adding terms of the Taylor series.
-        
+        Recursively calculates e using Taylor series expansion until desired accuracy is achieved.
+
         Returns:
-            float: e approximated to n decimal places
+            float: The calculated value of e rounded to n decimal places
         """
-        term = 1.0 / self.factorial
-        self.e += term
-        
-        # Base case: term smaller than desired accuracy
-        if term < self.accuracy:
-            return round(self.e, self.n)
-            
-        self.k += 1
-        self.factorial *= self.k  # Update factorial for next term
-        return self.taylor_series()
+        self.e += (1.0 / self.factorial)  # Add current term
+        if (1.0 / self.factorial) < self.accuracy:  # Check for convergence
+            return self.e
+        self.k += 1  # Increment term counter
+        self.factorial *= self.k  # Update factorial
+        return round(self.taylor_series(), self.n)
 
 
 class Fibonacci:
     """
-    Generates Fibonacci sequence up to a specified maximum value.
-    The sequence is generated iteratively for efficiency.
+    A class to generate the Fibonacci sequence up to a specified maximum value.
+
+    Attributes:
+        n (int): The upper limit for Fibonacci numbers
+        fib (list): List to store the sequence
+        i (int): Current index in the sequence generation
     """
-    
+
     def __init__(self, n):
-        """
-        Initializes Fibonacci sequence generator.
-        
-        Args:
-            n (int): Upper limit for sequence values
-            
-        Raises:
-            ValueError: For negative input values
-        """
         if n < 0:
             raise ValueError("The number must be a non-negative integer.")
         self.n = n
-        self.fib = [0, 1]  # Initial sequence values
+        self.fib = [0, 1]  # Initialize sequence
         self.i = 2  # Current index
 
     def calculate(self):
         """
-        Generates Fibonacci numbers up to the specified limit.
-        
+        Generates Fibonacci numbers until exceeding the specified limit.
+
         Returns:
-            list: Complete Fibonacci sequence up to n
+            list: The complete Fibonacci sequence up to the limit
         """
         while True:
-            next_val = self.fib[self.i - 1] + self.fib[self.i - 2]
-            if next_val > self.n:
+            next_val = self.fib[self.i - 1] + self.fib[self.i - 2]  # Calculate next term
+            if next_val > self.n:  # Check if we've exceeded the limit
                 break
-            self.fib.append(next_val)
-            self.i += 1
+            self.fib.append(next_val)  # Add to sequence
+            self.i += 1  # Increment index
         return self.fib
-
 
 
 class FibonacciCalculator:
     """
-    Generates the first n numbers in the Fibonacci sequence.
-    This implementation uses an iterative approach for efficiency.
+    A class to generate the first n numbers in the Fibonacci sequence.
+
+    Attributes:
+        limit (int): The number of Fibonacci numbers to generate
     """
-    
+
     def __init__(self, limit):
-        """
-        Initializes the Fibonacci sequence generator.
-        
-        Args:
-            limit (int): Number of Fibonacci numbers to generate
-            
-        Raises:
-            ValueError: For negative input values
-        """
         if limit < 0:
             raise ValueError("The number must be a non-negative integer.")
         self.limit = limit
 
     def calculate_fibonacci(self):
         """
-        Generates the Fibonacci sequence.
-        
+        Generates the first 'limit' Fibonacci numbers.
+
         Returns:
-            list: First 'limit' Fibonacci numbers
+            list: The Fibonacci sequence with 'limit' elements
         """
         if self.limit == 0:
             return []
         elif self.limit == 1:
             return [0]
-            
-        fib = [0, 1]
+        fib = [0, 1]  # Initial sequence
         while len(fib) < self.limit:
-            fib.append(fib[-1] + fib[-2])
+            fib.append(fib[-1] + fib[-2])  # Add next term
         return fib
 
 
 class PrimeFactors:
     """
-    Computes the prime factorization of a number using trial division.
-    Efficient for moderately sized numbers (up to 10^12 or so).
+    A class to find all prime factors of a given integer using trial division.
+
+    Attributes:
+        n (int): The number to factorize (must be > 1)
+        factors (list): List to store the prime factors
     """
-    
+
     def __init__(self, n):
-        """
-        Initializes the prime factorizer.
-        
-        Args:
-            n (int): Number to factor (must be > 1)
-            
-        Raises:
-            ValueError: For numbers less than 2
-        """
         if n < 2:
             raise ValueError("The number must be a positive integer greater than 1.")
         self.n = n
-        self.factors = []  # List to store prime factors
+        self.factors = []
 
     def find_factors(self):
         """
         Performs prime factorization using trial division.
-        
+
         Returns:
-            list: Prime factors in increasing order
+            list: The prime factors of the original number in ascending order
         """
         # Handle even factors
         while self.n % 2 == 0:
             self.factors.append(2)
             self.n //= 2
-            
-        # Check odd divisors up to sqrt(n)
-        limit = int(math.sqrt(self.n)) + 1
+
+        # Check odd factors up to sqrt(n)
+        limit = int(self.n ** 0.5) + 1
         for i in range(3, limit, 2):
             while self.n % i == 0:
                 self.factors.append(i)
                 self.n //= i
-                
-        # If remaining n is prime
+
+        # If remaining n is a prime > 2
         if self.n > 2:
             self.factors.append(self.n)
-            
         return self.factors
 
 
 class Tiles:
     """
-    Calculates the total cost to tile a rectangular floor area.
-    Supports any consistent units (meters, feet, etc.).
+    A class to calculate the total cost of tiling a floor area.
+
+    Attributes:
+        w (float): Width of the floor
+        h (float): Height of the floor
+        c (float): Cost per unit area
     """
-    
+
     def __init__(self, w, h, c):
-        """
-        Initializes the tile calculator.
-        
-        Args:
-            w (float): Floor width
-            h (float): Floor height
-            c (float): Cost per unit area
-            
-        Raises:
-            ValueError: For negative dimensions
-        """
         if w < 0 or h < 0 or c < 0:
             raise ValueError("All dimensions must be non-negative.")
         self.w = w
@@ -236,37 +199,33 @@ class Tiles:
 
     def cost(self):
         """
-        Computes total tiling cost.
-        
+        Calculates the total tiling cost.
+
         Returns:
-            float: Total cost (width × height × cost per unit)
+            float: Total cost (area × cost per unit)
         """
         return self.w * self.h * self.c
 
 
 class MonthlyPayments:
     """
-    Calculates fixed-rate loan payments using standard amortization formula.
-    Supports different compounding intervals (monthly, weekly, daily).
+    A class to calculate fixed-term mortgage payments with various compounding intervals.
+
+    Attributes:
+        principal (float): Loan amount
+        annual_rate (float): Annual interest rate
+        years (int): Loan term in years
+        interval (str): Compounding interval ('monthly', 'weekly', 'daily')
+        n (int): Total number of payments
+        r (float): Periodic interest rate
+        monthly_payment (float): Calculated payment amount
     """
-    
+
     def __init__(self, principal, annual_rate, years, interval):
-        """
-        Initializes payment calculator with loan terms.
-        
-        Args:
-            principal (float): Loan amount
-            annual_rate (float): Annual interest rate (decimal)
-            years (int): Loan term in years
-            interval (str): 'monthly', 'weekly', or 'daily'
-            
-        Raises:
-            ValueError: For invalid parameters or intervals
-        """
         if principal < 0 or annual_rate < 0 or years < 0:
             raise ValueError("All parameters must be non-negative.")
-            
-        # Convert to periodic terms
+
+        # Set compounding parameters based on interval
         if interval == "monthly":
             self.n = years * 12
             self.r = annual_rate / 12
@@ -278,49 +237,44 @@ class MonthlyPayments:
             self.r = annual_rate / 365
         else:
             raise ValueError("Invalid compounding interval. Choose 'monthly', 'weekly' or 'daily'.")
-            
-        self.principal = principal
+
         self.monthly_payment = None
+        self.principal = principal
 
     def calculate_monthly_payments(self):
         """
-        Computes fixed periodic payment amount.
-        
+        Calculates the fixed periodic payment amount using the standard loan formula.
+
         Returns:
-            float: Payment amount rounded to 2 decimal places
+            float: The payment amount rounded to 2 decimal places
         """
-        if self.r == 0:  # Handle interest-free loan
+        if self.r == 0:  # Handle zero-interest case
             self.monthly_payment = self.principal / self.n
         else:
-            # Standard amortization formula
-            self.monthly_payment = (self.principal * self.r * (1 + self.r)**self.n) / ((1 + self.r)**self.n - 1)
-            
+            # Standard loan payment formula
+            self.monthly_payment = (self.principal * self.r * (1 + self.r) ** self.n) / \
+                                   (((1 + self.r) ** self.n) - 1)
         return round(self.monthly_payment, 2)
 
 
 class PaybackTime:
     """
-    Calculates loan payback time given periodic payments.
-    Uses logarithmic solution to the amortization formula.
+    A class to calculate the time required to pay back a loan given periodic payments.
+
+    Attributes:
+        principal (float): Loan amount
+        annual_rate (float): Annual interest rate
+        monthly_payment (float): Fixed periodic payment amount
+        interval (str): Compounding interval ('monthly', 'weekly', 'daily')
+        r (float): Periodic interest rate
+        payback_time (float): Calculated payback time in years
     """
-    
+
     def __init__(self, principal, annual_rate, monthly_payment, interval):
-        """
-        Initializes payback time calculator.
-        
-        Args:
-            principal (float): Loan amount
-            annual_rate (float): Annual interest rate (decimal)
-            monthly_payment (float): Fixed periodic payment
-            interval (str): 'monthly', 'weekly', or 'daily'
-            
-        Raises:
-            ValueError: For invalid parameters
-        """
         if principal < 0 or annual_rate < 0 or monthly_payment < 0:
             raise ValueError("All parameters must be non-negative.")
-            
-        # Convert to periodic rate
+
+        # Set compounding parameters based on interval
         if interval == "monthly":
             self.r = annual_rate / 12
         elif interval == "weekly":
@@ -329,167 +283,146 @@ class PaybackTime:
             self.r = annual_rate / 365
         else:
             raise ValueError("Invalid compounding interval. Choose 'monthly', 'weekly' or 'daily'.")
-            
+
         self.monthly_payment = monthly_payment
         self.principal = principal
         self.payback_time = None
 
     def calculate_payback_time(self):
         """
-        Computes time required to pay off loan.
-        
+        Calculates the payback time using the logarithmic formula for loan repayment.
+
         Returns:
-            float: Time in years to pay off loan
+            float: The payback time in years
         """
-        if self.r == 0:  # Interest-free case
+        if self.r == 0:  # Handle zero-interest case
             self.payback_time = self.principal / self.monthly_payment / 12
         else:
-            # Logarithmic solution to amortization formula
-            numerator = math.log(self.monthly_payment / (self.monthly_payment - self.r * self.principal))
-            denominator = math.log(1 + self.r)
-            self.payback_time = numerator / denominator / 12  # Convert to years
-            
+            # Logarithmic formula for payback time
+            self.payback_time = math.log(
+                self.monthly_payment / (self.monthly_payment - self.r * self.principal)) / math.log(1 + self.r)
         return self.payback_time
 
 
 class ChangeCalculator:
     """
-    Calculates optimal change breakdown for a given amount.
-    Uses standard US currency denominations with greedy algorithm.
+    A class to calculate the breakdown of change into standard denominations.
+
+    Attributes:
+        n (float): The amount to break down (must be non-negative)
+        change (dict): Dictionary to store denomination counts
+        values (dict): Mapping of denomination values to their names
     """
-    
+
     def __init__(self, n):
-        """
-        Initializes change calculator.
-        
-        Args:
-            n (float): Amount to make change for
-            
-        Raises:
-            ValueError: For negative amounts
-        """
         if n < 0:
             raise ValueError("The amount must be a non-negative integer.")
-        self.n = round(n, 2)  # Handle floating point amounts
+        self.n = round(n, 2)  # Handle floating point precision
         self.change = {
-            "hundred-dollar bills": 0, "fifty-dollar bills": 0, "twenty-dollar bills": 0, 
-            "ten-dollar bills": 0, "five-dollar bills": 0, "two-dollar bills": 0, 
-            "one-dollar bills": 0, "quarters": 0, "dimes": 0, "nickels": 0, "pennies": 0
+            "hundred-dollar bills": 0, "fifty-dollar bills": 0, "twenty-dollar bills": 0, "ten-dollar bills": 0,
+            "five-dollar bills": 0, "two-dollar bills": 0, "one-dollar bills": 0,
+            "quarters": 0, "dimes": 0, "nickels": 0, "pennies": 0
         }
         self.values = {
-            100: "hundred-dollar bills", 50: "fifty-dollar bills", 20: "twenty-dollar bills",
-            10: "ten-dollar bills", 5: "five-dollar bills", 2: "two-dollar bills", 
-            1: "one-dollar bills", 0.25: "quarters", 0.10: "dimes", 0.05: "nickels", 0.01: "pennies"
+            100: "hundred-dollar bills", 50: "fifty-dollar bills", 20: "twenty-dollar bills", 10: "ten-dollar bills",
+            5: "five-dollar bills", 2: "two-dollar bills", 1: "one-dollar bills", 0.25: "quarters",
+            0.1: "dimes", 0.05: "nickels", 0.01: "pennies"
         }
 
     def calculate(self):
         """
-        Computes optimal change breakdown.
-        
+        Calculates the optimal breakdown of change using a greedy algorithm.
+
         Returns:
-            list: List of [denomination, count] pairs
+            list: List of [denomination, count] pairs for non-zero denominations
         """
         remaining = self.n
         # Process each denomination from largest to smallest
-        for value in sorted(self.values.keys(), reverse=True):
-            name = self.values[value]
+        for value, name in sorted(self.values.items(), reverse=True):
             if remaining >= value:
-                count = int(remaining // value)
+                count = int(remaining / value)
                 self.change[name] = count
-                remaining = round(remaining - count * value, 2)
-        return [[k, v] for k, v in self.change.items() if v != 0]
+                remaining = round(remaining % value, 2)  # Maintain precision
+        return [[key, value] for key, value in self.change.items() if value != 0]
 
     def display_change(self):
-        """Prints the change breakdown in human-readable format."""
+        """Prints the change breakdown in a human-readable format."""
         self.calculate()
-        for denomination, count in self.change.items():
-            if count > 0:
-                print(f"{denomination}: {count}")
+        for key, value in self.change.items():
+            if value != 0:
+                print(f"{key}: {value}")
+
 
 class UnitConverter:
     """
-    Handles unit conversions for various measurement types.
-    Supports length, temperature, area, and volume conversions.
+    A class to handle various unit conversions including length, temperature, area, and volume.
+
+    Attributes:
+        conversion_type (int): Type of conversion (1=length, 2=temperature, 3=area, 4=volume)
+        value (float): The value to convert
+        from_unit (str): The unit to convert from
+        to_unit (str): The unit to convert to
+        units (dict): Conversion factors for the selected type
     """
 
     def __init__(self, conversion_type, value, from_unit, to_unit):
-        """
-        Initializes the unit converter with input parameters.
-        
-        Args:
-            conversion_type (int): Type of conversion (1=length, 2=temperature, 3=area, 4=volume)
-            value (float): Value to convert
-            from_unit (str): Source unit
-            to_unit (str): Target unit
-
-        Raises:
-            ValueError: If a negative value is given for non-temperature conversions
-        """
         self.value = value
         self.from_unit = from_unit
         self.to_unit = to_unit
         self.conversion_type = conversion_type
 
-        if self.conversion_type == 1:
+        # Initialize conversion factors based on type
+        if self.conversion_type == 1:  # Length
             if value < 0:
                 raise ValueError("The value must be a non-negative number.")
-            # Length units in meters
             self.units = {
                 "m": 1, "km": 1000, "cm": 0.01, "mm": 0.001,
                 "in": 0.0254, "ft": 0.3048, "yd": 0.9144, "mi": 1609.344
             }
-
-        elif self.conversion_type == 3:
+        elif self.conversion_type == 3:  # Area
             if value < 0:
                 raise ValueError("The value must be a non-negative number.")
-            # Area units in square meters
             self.units = {
-                "m^2": 1, "km^2": 1000000, "cm^2": 0.0001, "mm^2": 0.000001,
-                "in^2": 0.00064516, "ft^2": 0.092903, "yd^2": 0.836127, "mi^2": 2589988.11
+                "m^2": 1, "km^2": 1000, "cm^2": 0.0001, "mm^2": 0.000001,
+                "in^2": 39.3701, "ft^2": 3.28084, "yd^2": 1.09361, "mi^2": 0.621371
             }
-
-        elif self.conversion_type == 4:
+        elif self.conversion_type == 4:  # Volume
             if value < 0:
                 raise ValueError("The value must be a non-negative number.")
-            # Volume units in cubic meters
             self.units = {
-                "m^3": 1, "km^3": 1e+9, "cm^3": 1e-6, "mm^3": 1e-9,
-                "in^3": 0.0000163871, "ft^3": 0.0283168,
-                "gal": 0.00378541, "l": 0.001, "ml": 0.000001,
-                "imperial pint": 0.000568261, "us fluid ounce": 0.0000295735
+                "m^3": 1, "km^3": 1000, "cm^3": 0.000001, "mm^3": 0.000000001,
+                "in^3": 61023.74419999999, "ft^3": 35.3146667, "gal": 0.003785411784,
+                "l": 0.001, "ml": 0.000001, "imperial pint": 0.000473176473,
+                "us fluid ounce": 0.000295735296
             }
 
     def convert(self):
         """
-        Converts the value based on the selected conversion type.
-        
+        Performs the unit conversion based on the specified type.
+
         Returns:
-            float: Converted value rounded to 2 decimal places
-        
-        Raises:
-            ValueError: For invalid units or unsupported conversions
+            float: The converted value rounded to 2 decimal places
         """
-        if self.conversion_type in (1, 3, 4):
+        if self.conversion_type in [1, 3, 4]:  # Length, area, or volume
             if self.from_unit in self.units and self.to_unit in self.units:
+                # Conversion formula: value × (from_unit / to_unit)
                 return round(self.value * self.units[self.from_unit] / self.units[self.to_unit], 2)
             else:
                 raise ValueError("Invalid unit provided for conversion.")
-        elif self.conversion_type == 2:
+        elif self.conversion_type == 2:  # Temperature
             return self.convert_temperature()
 
     def convert_temperature(self):
         """
-        Handles temperature conversion between Celsius, Fahrenheit, Kelvin, and Rankine.
-        
+        Handles temperature conversions between Celsius, Fahrenheit, Kelvin, and Rankine.
+
         Returns:
-            float: Converted temperature value
-        
-        Raises:
-            ValueError: For invalid temperature unit
+            float: The converted temperature
         """
-        if self.from_unit == self.to_unit:
+        if self.from_unit == self.to_unit:  # No conversion needed
             return self.value
 
+        # Define conversion formulas for each from_unit
         if self.from_unit == "C":
             conversions = {
                 "F": (self.value * 9 / 5) + 32,
@@ -518,122 +451,123 @@ class UnitConverter:
             raise ValueError("Invalid temperature unit provided.")
 
         return conversions.get(self.to_unit, "Invalid conversion.")
-class UnitConverter:
+
+
+class Validator:
     """
-    Handles unit conversions for various measurement types.
-    Supports length, temperature, area, and volume conversions.
+    A class to validate credit card numbers using the Luhn algorithm.
+
+    Attributes:
+        credit_card_number (str): The card number to validate
     """
 
-    def __init__(self, conversion_type, value, from_unit, to_unit):
+    def __init__(self, credit_card_number):
+        self.credit_card_number = credit_card_number
+
+    def check_luhn(self):
         """
-        Initializes the unit converter with input parameters.
-        
+        Validates a credit card number using the Luhn algorithm.
+
+        Returns:
+            bool: True if valid, False otherwise
+
+        Raises:
+            ValueError: If the input is invalid (empty, non-numeric, or wrong length)
+        """
+        if not self.credit_card_number:
+            raise ValueError("Credit card number cannot be empty.")
+        if not self.credit_card_number.isdigit():
+            raise ValueError("Credit card number must contain only digits.")
+        if len(self.credit_card_number) < 13 or len(self.credit_card_number) > 19:
+            raise ValueError("Credit card number must be between 13 and 19 digits long.")
+
+        digits = [int(digit) for digit in self.credit_card_number]
+
+        # Double every second digit from the right
+        for i in range(len(digits) - 2, -1, -2):
+            digits[i] *= 2
+            if digits[i] > 9:  # Handle double-digit results
+                digits[i] -= 9
+
+        # Check if sum is divisible by 10
+        total_sum = sum(digits)
+        return total_sum % 10 == 0
+
+
+class Taxes:
+    """
+    A class to calculate tax amounts and total costs including tax.
+
+    Attributes:
+        tax_rate (float): The tax rate (e.g., 0.05 for 5%)
+        cost (float): The pre-tax cost
+        tax (float): The calculated tax amount
+    """
+
+    def __init__(self, tax_rate, cost):
+        if tax_rate < 0 or cost < 0:
+            raise ValueError("Tax rate and cost must be non-negative.")
+        self.tax_rate = tax_rate
+        self.cost = cost
+        self.tax = 0  # Initialize tax amount
+
+    def calculate_tax(self):
+        """Calculates and returns the tax amount."""
+        self.tax = self.cost * self.tax_rate
+        return self.tax
+
+    def calculate_total(self):
+        """Calculates and returns the total cost including tax."""
+        return self.cost + self.tax
+
+
+class Factorial:
+    """
+    A class to calculate factorials using both iterative and recursive methods.
+
+    Attributes:
+        n (int): The number to compute factorial for (must be non-negative)
+    """
+
+    def __init__(self, n):
+        if n < 0:
+            raise ValueError("The number must be a non-negative integer.")
+        self.n = n
+
+    def factorial_loop(self):
+        """
+        Calculates factorial using an iterative approach.
+
+        Returns:
+            int: The factorial of n
+        """
+        factorial = 1
+        temp = self.n
+        while temp > 1:
+            factorial *= temp
+            temp -= 1
+        return factorial
+
+    def factorial_recursion(self, n=None):
+        """
+        Calculates factorial using recursion.
+
         Args:
-            conversion_type (int): Type of conversion (1=length, 2=temperature, 3=area, 4=volume)
-            value (float): Value to convert
-            from_unit (str): Source unit
-            to_unit (str): Target unit
+            n (int, optional): Current value for recursive calculation
 
-        Raises:
-            ValueError: If a negative value is given for non-temperature conversions
-        """
-        self.value = value
-        self.from_unit = from_unit
-        self.to_unit = to_unit
-        self.conversion_type = conversion_type
-
-        if self.conversion_type == 1:
-            if value < 0:
-                raise ValueError("The value must be a non-negative number.")
-            # Length units in meters
-            self.units = {
-                "m": 1, "km": 1000, "cm": 0.01, "mm": 0.001,
-                "in": 0.0254, "ft": 0.3048, "yd": 0.9144, "mi": 1609.344
-            }
-
-        elif self.conversion_type == 3:
-            if value < 0:
-                raise ValueError("The value must be a non-negative number.")
-            # Area units in square meters
-            self.units = {
-                "m^2": 1, "km^2": 1000000, "cm^2": 0.0001, "mm^2": 0.000001,
-                "in^2": 0.00064516, "ft^2": 0.092903, "yd^2": 0.836127, "mi^2": 2589988.11
-            }
-
-        elif self.conversion_type == 4:
-            if value < 0:
-                raise ValueError("The value must be a non-negative number.")
-            # Volume units in cubic meters
-            self.units = {
-                "m^3": 1, "km^3": 1e+9, "cm^3": 1e-6, "mm^3": 1e-9,
-                "in^3": 0.0000163871, "ft^3": 0.0283168,
-                "gal": 0.00378541, "l": 0.001, "ml": 0.000001,
-                "imperial pint": 0.000568261, "us fluid ounce": 0.0000295735
-            }
-
-    def convert(self):
-        """
-        Converts the value based on the selected conversion type.
-        
         Returns:
-            float: Converted value rounded to 2 decimal places
-        
-        Raises:
-            ValueError: For invalid units or unsupported conversions
+            int: The factorial of the original n
         """
-        if self.conversion_type in (1, 3, 4):
-            if self.from_unit in self.units and self.to_unit in self.units:
-                return round(self.value * self.units[self.from_unit] / self.units[self.to_unit], 2)
-            else:
-                raise ValueError("Invalid unit provided for conversion.")
-        elif self.conversion_type == 2:
-            return self.convert_temperature()
+        if n is None:  # Initial call
+            n = self.n
+        if n == 0 or n == 1:  # Base case
+            return 1
+        else:  # Recursive case
+            return n * self.factorial_recursion(n - 1)
 
-    def convert_temperature(self):
-        """
-        Handles temperature conversion between Celsius, Fahrenheit, Kelvin, and Rankine.
-        
-        Returns:
-            float: Converted temperature value
-        
-        Raises:
-            ValueError: For invalid temperature unit
-        """
-        if self.from_unit == self.to_unit:
-            return self.value
-
-        if self.from_unit == "C":
-            conversions = {
-                "F": (self.value * 9 / 5) + 32,
-                "K": self.value + 273.15,
-                "R": (self.value + 273.15) * 9 / 5,
-            }
-        elif self.from_unit == "F":
-            conversions = {
-                "C": (self.value - 32) * 5 / 9,
-                "K": (self.value - 32) * 5 / 9 + 273.15,
-                "R": self.value + 459.67,
-            }
-        elif self.from_unit == "K":
-            conversions = {
-                "C": self.value - 273.15,
-                "F": (self.value - 273.15) * 9 / 5 + 32,
-                "R": self.value * 9 / 5,
-            }
-        elif self.from_unit == "R":
-            conversions = {
-                "C": (self.value - 491.67) * 5 / 9,
-                "F": self.value - 459.67,
-                "K": self.value * 5 / 9,
-            }
-        else:
-            raise ValueError("Invalid temperature unit provided.")
-
-        return conversions.get(self.to_unit, "Invalid conversion.")
 
 if __name__ == "__main__":
     try:
-        pass
         # Calculate pi to nth digit
         n = int(input("Enter the number of decimal places (up to 100): "))
         print(f"Pi to {n} decimal places: {Pi(n).calculate()}")
@@ -644,7 +578,7 @@ if __name__ == "__main__":
 
         # Fibonacci Sequence to n
         n = int(input("Enter the limit: "))
-        print(Fibonacci(n).calculate())
+        print(f"Fibonacci sequence: {Fibonacci(n).calculate()}")
 
         # Fibonacci Sequence to nth number
         n = int(input("Enter the limit: "))
@@ -659,14 +593,16 @@ if __name__ == "__main__":
         annual_rate = float(input("Enter the annual interest rate (as a decimal, e.g., 0.05 for 5%): "))
         years = int(input("Enter the loan term in years: "))
         interval = input("Enter the compounding interval (monthly, weekly, daily): ")
-        print(f"Monthly payment: {MonthlyPayments(principal, annual_rate, years, interval).calculate_monthly_payments()}")
+        print(
+            f"Monthly payment: {MonthlyPayments(principal, annual_rate, years, interval).calculate_monthly_payments()}")
 
         # Payback time calculator
         principal = float(input("Enter the loan amount (principal): "))
         annual_rate = float(input("Enter the annual interest rate (as a decimal, e.g., 0.05 for 5%): "))
         monthly_payment = float(input("Enter the monthly payment: "))
         interval = input("Enter the compounding interval (monthly, weekly, daily): ")
-        print(f"Payback time: {PaybackTime(principal, annual_rate, monthly_payment, interval).calculate_payback_time()} years")
+        print(
+            f"Payback time: {PaybackTime(principal, annual_rate, monthly_payment, interval).calculate_payback_time()} years")
 
         # Change calculator
         amount = float(input("Enter the amount: "))
@@ -690,8 +626,10 @@ if __name__ == "__main__":
             from_unit = input("Enter the unit (m^2, km^2, cm^2, mm^2, in^2, ft^2, yd^2, mi^2): ")
             to_unit = input("Enter the unit to convert to (m^2, km^2, cm^2, mm^2, in^2, ft^2, yd^2, mi^2): ")
         elif choice == 4:
-            from_unit = input("Enter the unit (m^3, km^3, cm^3, mm^3, in^3, ft^3, gal, l, ml, imperial pint, us fluid ounce): ")
-            to_unit = input("Enter the unit to convert to (m^3, km^3, cm^3, mm^3, in^3, ft^3, gal, l, ml, imperial pint, us fluid ounce): ")
+            from_unit = input(
+                "Enter the unit (m^3, km^3, cm^3, mm^3, in^3, ft^3, gal, l, ml, imperial pint, us fluid ounce): ")
+            to_unit = input(
+                "Enter the unit to convert to (m^3, km^3, cm^3, mm^3, in^3, ft^3, gal, l, ml, imperial pint, us fluid ounce): ")
 
         print(f"{value} {from_unit} is equal to {UnitConverter(choice, value, from_unit, to_unit).convert()} {to_unit}")
 
